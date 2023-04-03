@@ -2,16 +2,34 @@
 
 import dns.resolver
 import whois
+import threading
+import random
+import string
 
-with open('sgb-words.txt') as domains:
-    for domain in domains:
-        domain = domain.strip() + ".ru"
+zone = '.ru'
+def domain1(fzone):
+    domen = ''
+    for i in range(3):
+        domen += random.choice(string.ascii_lowercase + string.digits)
+    domen += fzone
+    return domen
+
+def domain_founder():
+    domain_name = domain1(zone)
+    print(domain_name)
+    try:
+        result = dns.resolver.resolve(domain_name)
+    except KeyboardInterrupt:
+        quit()
+    except:
         try:
-            result = dns.resolver.resolve(domain, 'A')
-        except KeyboardInterrupt:
-            break
+            result = whois.whois(domain_name)
         except:
-            try:
-                result = whois.whois(domain)
-            except:
-                print("Domain found " + domain)
+            print("Domain found " + domain_name)
+while True:
+    for i in range(5):
+        my_thread = threading.Thread(
+            target=domain_founder)
+        my_thread.start()
+    for i in range(5):
+        my_thread.join()
